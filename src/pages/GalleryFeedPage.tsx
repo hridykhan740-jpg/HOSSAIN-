@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
-import { Heart, MessageCircle, Send, ArrowLeft, Play } from 'lucide-react';
+import { Heart, MessageCircle, Send, ArrowLeft, Play, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-export default function GalleryFeedPage() {
+export default function GalleryFeedPage({ isAdmin }: { isAdmin?: boolean }) {
   const [items, setItems] = useState<any[]>([]);
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
   const [filterType, setFilterType] = useState<'all' | 'image' | 'video'>('all');
@@ -77,6 +77,17 @@ export default function GalleryFeedPage() {
     setCommentInputs(prev => ({ ...prev, [id]: value }));
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    try {
+      await deleteDoc(doc(db, 'gallery', id));
+      toast.success('Item deleted');
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to delete item');
+    }
+  };
+
   const filteredItems = filterType === 'all' ? items : items.filter(i => i.type === filterType);
 
   return (
@@ -113,9 +124,22 @@ export default function GalleryFeedPage() {
             className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-xl"
           >
             {/* Header / Caption if any */}
-            {item.caption && (
-              <div className="p-4 border-b border-white/5">
-                <p className="text-slate-200">{item.caption}</p>
+            {(item.caption || isAdmin) && (
+              <div className="p-4 border-b border-white/5 flex justify-between items-start">
+                {item.caption ? (
+                  <p className="text-slate-200">{item.caption}</p>
+                ) : (
+                  <div></div>
+                )}
+                {isAdmin && (
+                  <button 
+                    onClick={() => handleDelete(item.id)}
+                    className="p-2 text-red-400 hover:text-white hover:bg-red-500/20 rounded-full transition-colors flex-shrink-0"
+                    title="Delete item"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                )}
               </div>
             )}
             

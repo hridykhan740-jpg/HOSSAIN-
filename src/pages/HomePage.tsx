@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'motion/react';
-import Header from '../components/Header';
+import Header from './Header';
 import ServicesSection from '../components/ServicesSection';
 import ActionLinks from '../components/ActionLinks';
 import GallerySection from '../components/GallerySection';
@@ -65,7 +65,7 @@ export default function HomePage({ isAdmin }: { isAdmin: boolean }) {
             <ServicesSection />
           </motion.div>
 
-          <GallerySection />
+          <GallerySection isAdmin={isAdmin} />
           <ReviewsSection isAdmin={isAdmin} />
           <ContactSection />
         </main>

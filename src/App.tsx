@@ -80,7 +80,7 @@ export default function App() {
         <Route path="/access" element={<AccessPage />} />
         <Route path="/home" element={<HomePage isAdmin={isAdmin} />} />
         <Route path="/admin" element={<AdminPage isAdmin={isAdmin} />} />
-        <Route path="/gallery" element={<GalleryFeedPage />} />
+        <Route path="/gallery" element={<GalleryFeedPage isAdmin={isAdmin} />} />
         <Route path="/portfolio/:category" element={<PortfolioPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

@@ -4,7 +4,7 @@ import { Phone, Mail, Facebook, MessageCircle, MessageSquare, Settings, X } from
 import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import ThemeToggle from './ThemeToggle';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const navigate = useNavigate();
@@ -75,9 +75,12 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
                 <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 tracking-tight">
                   Àbdüllāh Aĺ Hỗŝŝâîň
                 </h1>
-                <p className="text-indigo-400 font-medium text-base md:text-lg mb-5 flex items-center justify-center md:justify-start gap-4 flex-wrap">
+                <p className="text-indigo-400 font-medium text-base md:text-lg mb-2 flex items-center justify-center md:justify-start gap-4 flex-wrap">
                   <span className="flex items-center gap-2 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20"><Phone className="w-4 h-4"/> +8801876357998</span>
                   <span className="flex items-center gap-2 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20"><Mail className="w-4 h-4"/> mhossenali740@gmail.com</span>
+                </p>
+                <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base max-w-2xl text-center md:text-left mx-auto md:mx-0 py-2 mb-4">
+                  Passionate expert in Web & App Development, Digital Marketing, and General Tech Solutions. Dedicated to delivering high-quality and reliable services tailored to your digital growth and business needs.
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">

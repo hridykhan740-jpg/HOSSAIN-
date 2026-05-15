@@ -1,11 +1,11 @@
 import { motion, AnimatePresence } from 'motion/react';
 import React, { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, orderBy, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, updateDoc, doc, arrayUnion, arrayRemove, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
-import { Play, X, Heart, MessageCircle, Send } from 'lucide-react';
+import { Play, X, Heart, MessageCircle, Send, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-export default function GallerySection() {
+export default function GallerySection({ isAdmin }: { isAdmin?: boolean }) {
   const [items, setItems] = useState<any[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
@@ -100,6 +100,19 @@ export default function GallerySection() {
     }
   };
 
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this specific gallery item?')) return;
+    try {
+      await deleteDoc(doc(db, 'gallery', id));
+      toast.success('Item deleted');
+      if (selectedItemId === id) setSelectedItemId(null);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to delete item');
+    }
+  };
+
   if (items.length === 0) return null;
 
   const selectedItem = items.find(i => i.id === selectedItemId);
@@ -149,6 +162,15 @@ export default function GallerySection() {
                 </div>
               ) : (
                 <img src={item.url} alt={item.caption} className="w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              )}
+              {isAdmin && (
+                <button
+                  onClick={(e) => handleDelete(e, item.id)}
+                  className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/80 text-white hover:text-red-400 rounded-full backdrop-blur-sm transition-all shadow-xl opacity-0 group-hover:opacity-100 z-10"
+                  title="Delete item"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               )}
             </div>
             
@@ -292,18 +314,29 @@ export default function GallerySection() {
 
                 {/* Action Bar */}
                 <div className="shrink-0 p-4 border-t border-white/5 bg-slate-900">
-                  <div className="flex items-center gap-6 mb-4">
-                    <button 
-                      onClick={() => handleLike(selectedItem)}
-                      className="flex items-center gap-2 text-slate-300 hover:text-white group transition-colors"
-                    >
-                      <Heart className={`w-6 h-6 transition-transform group-hover:scale-110 group-active:scale-95 ${selectedItem.likes?.includes(auth.currentUser?.email) ? 'fill-pink-500 text-pink-500' : ''}`} />
-                      <span className="font-medium text-sm">{selectedItem.likes?.length || 0}</span>
-                    </button>
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <MessageCircle className="w-6 h-6" />
-                      <span className="font-medium text-sm">{selectedItem.comments?.length || 0}</span>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-6">
+                      <button 
+                        onClick={() => handleLike(selectedItem)}
+                        className="flex items-center gap-2 text-slate-300 hover:text-white group transition-colors"
+                      >
+                        <Heart className={`w-6 h-6 transition-transform group-hover:scale-110 group-active:scale-95 ${selectedItem.likes?.includes(auth.currentUser?.email) ? 'fill-pink-500 text-pink-500' : ''}`} />
+                        <span className="font-medium text-sm">{selectedItem.likes?.length || 0}</span>
+                      </button>
+                      <div className="flex items-center gap-2 text-slate-300">
+                        <MessageCircle className="w-6 h-6" />
+                        <span className="font-medium text-sm">{selectedItem.comments?.length || 0}</span>
+                      </div>
                     </div>
+                    {isAdmin && (
+                      <button 
+                        onClick={(e) => handleDelete(e, selectedItem.id)}
+                        className="p-2 text-red-400 hover:text-white hover:bg-red-500/20 rounded-full transition-colors flex-shrink-0"
+                        title="Delete item"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
                   </div>
 
                   {/* Comment Input */}
