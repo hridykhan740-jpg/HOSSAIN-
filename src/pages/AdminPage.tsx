@@ -177,36 +177,39 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col md:flex-row">
       {/* Sidebar */}
-      <div className="w-64 bg-slate-900 border-r border-white/5 flex flex-col p-6 sticky top-0 h-screen overflow-y-auto shrink-0">
-        <h2 className="text-xl font-bold mb-10 text-indigo-400">Admin Panel</h2>
-        <nav className="flex-1 space-y-2">
+      <div className="w-full md:w-64 bg-slate-900 border-b md:border-b-0 md:border-r border-white/5 flex flex-col p-4 md:p-6 md:sticky md:top-0 md:h-screen shrink-0 relative z-20">
+        <h2 className="text-xl font-bold mb-4 md:mb-10 text-indigo-400">Admin Panel</h2>
+        <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-1">
           {[
             { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-            { id: 'profile', icon: UserCircle, label: 'Profile Picture' },
-            { id: 'visitors', icon: Users, label: 'Visitors List' },
-            { id: 'gallery', icon: ImageIcon, label: 'Manage Gallery' },
-            { id: 'reviews', icon: Star, label: 'Manage Reviews' },
-            { id: 'services', icon: Briefcase, label: 'Update Services' },
+            { id: 'profile', icon: UserCircle, label: 'Profile' },
+            { id: 'visitors', icon: Users, label: 'Visitors' },
+            { id: 'gallery', icon: ImageIcon, label: 'Gallery' },
+            { id: 'reviews', icon: Star, label: 'Reviews' },
+            { id: 'services', icon: Briefcase, label: 'Services' },
           ].map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id as any)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === item.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 md:py-3 rounded-xl transition-colors ${activeTab === item.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 bg-white/5 md:bg-transparent hover:bg-white/10 hover:text-white'}`}
             >
               <item.icon className="w-5 h-5" />
               {item.label}
             </button>
           ))}
         </nav>
-        <button onClick={() => navigate('/home')} className="mt-auto flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-colors">
+        <button onClick={() => navigate('/home')} className="hidden md:flex mt-auto items-center gap-3 px-4 py-3 text-slate-400 hover:text-white transition-colors">
           <LogOut className="w-5 h-5 rotate-180" /> Back to Home
+        </button>
+        <button onClick={() => navigate('/home')} className="md:hidden absolute top-4 right-4 flex items-center p-2 text-slate-400 bg-white/5 rounded-lg hover:bg-white/10 hover:text-white transition-colors">
+          <LogOut className="w-5 h-5 rotate-180" />
         </button>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-10 overflow-y-auto h-screen">
+      <div className="flex-1 p-4 md:p-10 overflow-y-auto md:h-screen">
         <h1 className="text-3xl font-bold mb-8 capitalize">{activeTab}</h1>
         
         {activeTab === 'dashboard' && (
