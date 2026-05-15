@@ -20,7 +20,7 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && user.email === 'hridykhan740@gmail.com') {
+      if (user && user.email?.toLowerCase().trim() === 'hridykhan740@gmail.com') {
         setIsAdmin(true);
       } else {
         setIsAdmin(false);

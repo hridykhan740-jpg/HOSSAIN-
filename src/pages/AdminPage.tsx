@@ -217,15 +217,9 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
           <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl max-w-lg">
             <h3 className="text-lg font-medium mb-4">Update Profile Picture</h3>
             
-            {profileUrl ? (
-              <div className="mb-6">
-                <img src={profileUrl} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-indigo-500/30" />
-              </div>
-            ) : (
-              <div className="mb-6 w-32 h-32 rounded-full bg-slate-800 flex items-center justify-center border-4 border-indigo-500/30">
-                <UserCircle className="w-16 h-16 text-slate-500" />
-              </div>
-            )}
+            <div className="mb-6">
+               <img src={profileUrl || "https://i.ibb.co/DH1xjsn1/image-4-2.jpg"} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-indigo-500/30" />
+            </div>
 
             <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
               <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm" accept="image/*" />

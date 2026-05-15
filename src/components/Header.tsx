@@ -37,8 +37,8 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
             className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-1 shrink-0 shadow-xl"
           >
             <div className="w-full h-full rounded-full bg-slate-900 overflow-hidden border-4 border-slate-900 object-cover flex items-center justify-center text-5xl">
-              {profileUrl ? (
-                <img src={profileUrl} alt="Profile" className="w-full h-full object-cover" />
+              {profileUrl || true ? (
+                <img src={profileUrl || "https://i.ibb.co/DH1xjsn1/image-4-2.jpg"} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 '👨‍💻'
               )}
