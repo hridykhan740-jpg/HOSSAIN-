@@ -1,17 +1,11 @@
 import { motion } from 'motion/react';
-import { ShoppingCart, Mail, Globe, Code, Smartphone, Image, Star, Briefcase } from 'lucide-react';
+import { ShoppingCart, Mail, Globe, Code, Smartphone, Image, Star, Briefcase, Megaphone, Laptop, PenTool, Database, Cpu, Layout, Pen, Video, Camera, Wallet, CreditCard, Zap, FileText, CheckCircle, GripHorizontal } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 const ICONS: Record<string, any> = {
-  'ShoppingCart': ShoppingCart,
-  'Mail': Mail,
-  'Globe': Globe,
-  'Code': Code,
-  'Smartphone': Smartphone,
-  'Image': Image,
-  'Star': Star,
+  ShoppingCart, Mail, Globe, Code, Smartphone, Image, Star, Briefcase, Megaphone, Laptop, PenTool, Database, Cpu, Layout, Pen, Video, Camera, Wallet, CreditCard, Zap, FileText, CheckCircle, GripHorizontal
 };
 
 const DEFAULT_SERVICES = [
@@ -25,10 +19,11 @@ const DEFAULT_SERVICES = [
 export default function ServicesSection() {
   const [services, setServices] = useState<any[]>(DEFAULT_SERVICES);
   const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [categoryIcons, setCategoryIcons] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const q = query(collection(db, 'services'), orderBy('createdAt', 'asc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribeServices = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
         const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setServices(fetched);
@@ -36,7 +31,19 @@ export default function ServicesSection() {
     }, (error) => {
       console.error(error);
     });
-    return unsubscribe;
+
+    const unsubscribeIcons = onSnapshot(collection(db, 'category_icons'), (snapshot) => {
+      const icons: Record<string, string> = {};
+      snapshot.docs.forEach(doc => {
+        icons[doc.id] = doc.data().iconName;
+      });
+      setCategoryIcons(icons);
+    }, (error) => console.error(error));
+
+    return () => {
+      unsubscribeServices();
+      unsubscribeIcons();
+    };
   }, []);
 
   const categories = useMemo(() => {
@@ -57,15 +64,28 @@ export default function ServicesSection() {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'}`}
-          >
-            {cat}
-          </button>
-        ))}
+        {categories.map((cat) => {
+          let CatIcon = Briefcase;
+          if (cat === 'All') {
+            CatIcon = ICONS['GripHorizontal'] || Briefcase;
+          } else {
+            const iconName = categoryIcons[cat];
+            if (iconName && ICONS[iconName]) {
+              CatIcon = ICONS[iconName];
+            }
+          }
+
+          return (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-700 hover:text-white'}`}
+            >
+              <CatIcon className="w-4 h-4" />
+              {cat}
+            </button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -79,7 +99,7 @@ export default function ServicesSection() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
-              className="group relative bg-slate-900/50 backdrop-blur-sm border border-white/5 p-8 rounded-3xl hover:bg-slate-800/50 transition-colors overflow-hidden flex flex-col items-start"
+              className="group relative bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-white/5 p-8 rounded-3xl hover:bg-slate-800/50 transition-colors overflow-hidden flex flex-col items-start"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               

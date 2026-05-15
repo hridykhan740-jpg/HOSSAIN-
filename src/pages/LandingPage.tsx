@@ -6,7 +6,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-screen bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
       {/* Background Orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/30 rounded-full blur-[128px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/30 rounded-full blur-[128px] pointer-events-none" />
@@ -26,7 +26,7 @@ export default function LandingPage() {
           Welcome to Our Site
         </motion.h1>
         
-        <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12">
+        <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12">
           Experience a premium digital journey crafted with elegance and precision.
         </p>
 
@@ -34,7 +34,7 @@ export default function LandingPage() {
           whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(139, 92, 246, 0.5)" }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/access')}
-          className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full text-white font-semibold text-lg overflow-hidden transition-all group"
+          className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full text-slate-900 dark:text-white font-semibold text-lg overflow-hidden transition-all group"
         >
           <span className="relative z-10 flex items-center gap-2">
             Please Visit Now

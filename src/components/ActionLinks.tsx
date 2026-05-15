@@ -55,10 +55,10 @@ export default function ActionLinks() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               onClick={link.onClick}
-              className={`relative overflow-hidden group bg-slate-900 border border-white/5 rounded-2xl p-6 flex flex-col items-center gap-4 hover:border-white/20 transition-colors shadow-lg`}
+              className={`relative overflow-hidden group bg-white dark:bg-slate-900 border border-white/5 rounded-2xl p-6 flex flex-col items-center gap-4 hover:border-white/20 transition-colors shadow-lg`}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
-              <div className={`p-4 rounded-xl bg-slate-800 text-white group-hover:scale-110 transition-transform bg-gradient-to-br ${link.color}`}>
+              <div className={`p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white group-hover:scale-110 transition-transform bg-gradient-to-br ${link.color}`}>
                 <link.icon className="w-6 h-6 text-white" />
               </div>
               <span className="font-medium text-slate-300 group-hover:text-white transition-colors text-center text-sm md:text-base">
@@ -81,11 +81,11 @@ export default function ActionLinks() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl relative"
+              className="bg-slate-900 border border-slate-200 dark:border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl relative"
             >
               <button 
                 onClick={() => setIsOrderModalOpen(false)}
-                className="absolute top-4 right-4 p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white"
+                className="absolute top-4 right-4 p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-slate-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -99,7 +99,7 @@ export default function ActionLinks() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-400">Full Name</label>
-                    <input required name="name" type="text" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder:text-slate-600" placeholder="John Doe" />
+                    <input required name="name" type="text" className="w-full bg-slate-100 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder:text-slate-600" placeholder="John Doe" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-400">Profession</label>

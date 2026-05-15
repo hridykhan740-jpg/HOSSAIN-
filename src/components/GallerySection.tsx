@@ -118,7 +118,7 @@ export default function GallerySection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
-            className="flex flex-col bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-white/5 break-inside-avoid shadow-indigo-500/5 hover:shadow-indigo-500/10 transition-shadow group"
+            className="flex flex-col bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-white/5 break-inside-avoid shadow-indigo-500/5 hover:shadow-indigo-500/10 transition-shadow group"
           >
             <div 
               className="relative overflow-hidden cursor-pointer"
@@ -128,7 +128,7 @@ export default function GallerySection() {
                 <div className="relative">
                   <video src={item.url} muted loop playsInline autoPlay className="w-full object-cover transition-transform duration-500 group-hover:scale-105 aspect-video" />
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                    <Play className="w-12 h-12 text-white opacity-80" />
+                    <Play className="w-12 h-12 text-slate-900 dark:text-white opacity-80" />
                   </div>
                 </div>
               ) : (
@@ -142,7 +142,7 @@ export default function GallerySection() {
               <div className="flex items-center gap-6 mt-1">
                 <button 
                   onClick={() => handleLike(item)}
-                  className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group/btn"
+                  className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-white transition-colors group/btn"
                 >
                   <Heart className={`w-5 h-5 transition-transform group-active/btn:scale-95 ${item.likes?.includes(auth.currentUser?.email) ? 'fill-pink-500 text-pink-500' : ''}`} />
                   <span className="text-sm font-medium">{item.likes?.length || 0}</span>
@@ -175,7 +175,7 @@ export default function GallerySection() {
                           onChange={(e) => setGridCommentText(e.target.value)}
                           placeholder={auth.currentUser ? "Write a comment..." : "Sign in to comment"}
                           disabled={!auth.currentUser}
-                          className="w-full bg-slate-800 border border-white/5 rounded-full px-4 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-10 disabled:opacity-50"
+                          className="w-full bg-slate-100 dark:bg-slate-800 border border-white/5 rounded-full px-4 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-10 disabled:opacity-50"
                           autoFocus
                         />
                         <button 

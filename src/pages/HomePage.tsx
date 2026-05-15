@@ -23,7 +23,7 @@ export default function HomePage({ isAdmin }: { isAdmin: boolean }) {
   }, []);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-slate-950 text-white selection:bg-indigo-500/30 relative overflow-hidden">
+    <div ref={containerRef} className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white selection:bg-indigo-500/30 relative overflow-hidden">
       {/* Immersive Video Background */}
       <motion.div 
         style={{ y: backgroundY, opacity }} 

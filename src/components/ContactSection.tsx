@@ -22,13 +22,13 @@ export default function ContactSection() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-slate-900/50 backdrop-blur-xl border border-white/10 p-8 md:p-12 rounded-3xl"
+          className="bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-8 md:p-12 rounded-3xl"
         >
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Name</label>
-                <input required className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="John Doe" />
+                <label className="block text-sm text-slate-500 dark:text-slate-400 mb-2">Name</label>
+                <input required className="w-full bg-slate-100 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="John Doe" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Gmail</label>

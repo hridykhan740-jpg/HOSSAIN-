@@ -65,7 +65,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex bg-slate-950 items-center justify-center min-h-screen text-white">
+      <div className="flex bg-slate-50 dark:bg-slate-950 items-center justify-center min-h-screen text-slate-900 dark:text-white">
         <div className="w-16 h-16 border-4 border-t-transparent border-indigo-500 rounded-full animate-spin"></div>
       </div>
     );

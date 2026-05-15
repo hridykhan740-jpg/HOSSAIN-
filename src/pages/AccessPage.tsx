@@ -37,7 +37,7 @@ export default function AccessPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-950 flex flex-col items-center justify-center overflow-hidden px-4">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden px-4">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[128px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[128px] pointer-events-none" />
 
@@ -48,13 +48,13 @@ export default function AccessPage() {
         className="relative w-full max-w-md"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl blur outline-none opacity-50 shadow-2xl" />
-        <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl">
+        <div className="relative bg-white dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-8 rounded-3xl shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-white/5">
               <Mail className="w-8 h-8 text-indigo-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Sign in to continue</h2>
-            <p className="text-slate-400 text-sm">Secure access to our platform.</p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Sign in to continue</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Secure access to our platform.</p>
           </div>
 
           <div className="space-y-6">
