@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "Visitor": {
+      "title": "Visitor",
+      "description": "A user who entered their Gmail on the access page",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Visitor's Gmail address"
+        },
+        "visitedAt": {
+          "type": "timestamp"
+        }
+      },
+      "required": ["email", "visitedAt"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "A service offered on the website",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "iconName": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["title", "description", "iconName", "createdAt", "updatedAt"]
+    },
+    "GalleryItem": {
+      "title": "Gallery Item",
+      "description": "An image or video in the gallery",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["image", "video"] },
+        "url": { "type": "string" },
+        "thumbnailUrl": { "type": "string" },
+        "caption": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["type", "url", "createdAt", "updatedAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "A customer review",
+      "type": "object",
+      "properties": {
+        "reviewerName": { "type": "string" },
+        "reviewerEmail": { "type": "string" },
+        "rating": { "type": "number", "minimum": 1, "maximum": 5 },
+        "content": { "type": "string" },
+        "screenshotUrl": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["reviewerName", "rating", "content", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/visitors/{visitorId}": {
+      "schema": { "$ref": "#/entities/Visitor" },
+      "description": "Visitor logs"
+    },
+    "/services/{serviceId}": {
+      "schema": { "$ref": "#/entities/Service" },
+      "description": "List of services"
+    },
+    "/gallery/{galleryId}": {
+      "schema": { "$ref": "#/entities/GalleryItem" },
+      "description": "Gallery items"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Customer reviews"
+    }
+  }
+}
