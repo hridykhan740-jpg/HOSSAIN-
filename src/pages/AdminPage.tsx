@@ -4,18 +4,20 @@ import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { collection, onSnapshot, query, orderBy, addDoc, setDoc, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { auth, db, storage } from '../lib/firebase';
-import { Shield, Loader2, Users, LayoutDashboard, Image as ImageIcon, Star, LogOut, Trash2, Briefcase, UserCircle, Edit2, Check, X } from 'lucide-react';
+import { Shield, Loader2, Users, LayoutDashboard, Image as ImageIcon, Star, LogOut, Trash2, Briefcase, UserCircle, Edit2, Check, X, FolderGit2, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'dashboard'|'profile'|'visitors'|'gallery'|'reviews'|'services'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard'|'profile'|'visitors'|'gallery'|'reviews'|'services'|'portfolio'|'orders'>('dashboard');
 
   const [visitors, setVisitors] = useState<any[]>([]);
   const [gallery, setGallery] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
+  const [portfolio, setPortfolio] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
 
   // Add Gallery Data
   const [uploadFile, setUploadFile] = useState<File|null>(null);
@@ -30,6 +32,14 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
   const [serviceCategory, setServiceCategory] = useState('Development');
   const [serviceUploadFile, setServiceUploadFile] = useState<File|null>(null);
   const [isServiceUploading, setIsServiceUploading] = useState(false);
+
+  // Add Portfolio Data
+  const [portTitle, setPortTitle] = useState('');
+  const [portDesc, setPortDesc] = useState('');
+  const [portCategory, setPortCategory] = useState('ecommerce');
+  const [portUrl, setPortUrl] = useState('');
+  const [portUploadFile, setPortUploadFile] = useState<File|null>(null);
+  const [isPortUploading, setIsPortUploading] = useState(false);
 
   // Add Profile Data
   const [profileUrl, setProfileUrl] = useState('');
@@ -46,6 +56,8 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
     const unsubGallery = onSnapshot(query(collection(db, 'gallery'), orderBy('createdAt', 'desc')), snap => setGallery(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Gallery error:", err));
     const unsubReviews = onSnapshot(query(collection(db, 'reviews'), orderBy('createdAt', 'desc')), snap => setReviews(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Reviews error:", err));
     const unsubServices = onSnapshot(query(collection(db, 'services'), orderBy('createdAt', 'asc')), snap => setServices(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Services error:", err));
+    const unsubPortfolio = onSnapshot(query(collection(db, 'portfolio'), orderBy('createdAt', 'desc')), snap => setPortfolio(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Portfolio error:", err));
+    const unsubOrders = onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')), snap => setOrders(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Orders error:", err));
     
     // Fetch profile
     const unsubProfile = onSnapshot(doc(db, 'profile', 'admin'), snap => {
@@ -59,6 +71,8 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
       unsubGallery();
       unsubReviews();
       unsubServices();
+      unsubPortfolio();
+      unsubOrders();
       unsubProfile();
     }
   }, [isAdmin]);
@@ -171,6 +185,39 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
     }
   };
 
+  const handleAddPortfolio = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPortUploading(true);
+    try {
+      let imageUrl = '';
+      if (portUploadFile) {
+         const storageRef = ref(storage, `portfolio/${Date.now()}_${portUploadFile.name}`);
+         const snapshot = await uploadBytes(storageRef, portUploadFile);
+         imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      await addDoc(collection(db, 'portfolio'), {
+        title: portTitle,
+        description: portDesc,
+        category: portCategory,
+        url: portUrl,
+        imageUrl: imageUrl,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      toast.success('Portfolio item added');
+      setPortTitle('');
+      setPortDesc('');
+      setPortCategory('ecommerce');
+      setPortUrl('');
+      setPortUploadFile(null);
+    } catch(e: any) {
+      toast.error('Failed to add portfolio item: ' + e.message);
+    } finally {
+      setIsPortUploading(false);
+    }
+  };
+
   const handleDeleteEntry = async (collectionName: string, id: string) => {
     if (!window.confirm('Are you sure?')) return;
     try {
@@ -222,6 +269,8 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
             { id: 'gallery', icon: ImageIcon, label: 'Gallery' },
             { id: 'reviews', icon: Star, label: 'Reviews' },
             { id: 'services', icon: Briefcase, label: 'Services' },
+            { id: 'portfolio', icon: FolderGit2, label: 'Portfolio' },
+            { id: 'orders', icon: ShoppingBag, label: 'Orders' },
           ].map(item => (
             <button
               key={item.id}
@@ -434,6 +483,100 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
                 </div>
               ))}
               {services.length === 0 && <p className="text-slate-500 text-sm">No services added yet. The home page will show default services.</p>}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'portfolio' && (
+          <div>
+            <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl mb-8 flex flex-col gap-4">
+              <h3 className="text-lg font-medium">Add Portfolio Item</h3>
+              <form onSubmit={handleAddPortfolio} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">Title</label>
+                  <input required type="text" placeholder="Project Name" value={portTitle} onChange={e=>setPortTitle(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">Description</label>
+                  <input required type="text" placeholder="Short description" value={portDesc} onChange={e=>setPortDesc(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">Category</label>
+                  <select value={portCategory} onChange={e=>setPortCategory(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-white">
+                    <option value="ecommerce">E-commerce</option>
+                    <option value="website">Website</option>
+                    <option value="app">App</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">URL</label>
+                  <input type="url" placeholder="https://..." value={portUrl} onChange={e=>setPortUrl(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div className="flex flex-col gap-1 lg:col-span-2">
+                  <label className="text-xs text-slate-400">Image (Optional)</label>
+                  <div className="flex gap-2">
+                    <input type="file" onChange={e=>setPortUploadFile(e.target.files?.[0] || null)} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-2 py-1.5 text-xs" accept="image/*" />
+                    <button disabled={isPortUploading} type="submit" className="bg-indigo-600 px-6 py-2 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center justify-center">
+                      {isPortUploading ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Add'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {portfolio.map(p => (
+                <div key={p.id} className="bg-slate-900 border border-white/5 rounded-2xl overflow-hidden flex flex-col">
+                  {p.imageUrl ? (
+                    <img src={p.imageUrl} alt={p.title} className="w-full h-40 object-cover" />
+                  ) : (
+                    <div className="w-full h-40 bg-slate-800 flex items-center justify-center">
+                      <FolderGit2 className="w-10 h-10 text-slate-600" />
+                    </div>
+                  )}
+                  <div className="p-4 flex flex-col flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-bold flex-1">{p.title}</h4>
+                      <button onClick={() => handleDeleteEntry('portfolio', p.id)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="w-4 h-4"/></button>
+                    </div>
+                    <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded w-fit mb-2">{p.category}</span>
+                    <p className="text-sm text-slate-400 mb-4 flex-1">{p.description}</p>
+                    {p.url && <a href={p.url} target="_blank" rel="noreferrer" className="text-sm text-indigo-400 hover:text-indigo-300">Visit Link &rarr;</a>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'orders' && (
+          <div>
+            <h3 className="text-xl font-bold mb-6">Orders</h3>
+            <div className="space-y-4">
+              {orders.map(o => (
+                <div key={o.id} className="bg-slate-900 border border-white/5 p-6 rounded-2xl flex flex-col md:flex-row justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                       <h4 className="font-bold text-lg">{o.name}</h4>
+                       <span className="bg-indigo-500/20 text-indigo-400 text-xs px-3 py-1 rounded-full">{o.service_type}</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-300">
+                      <p><span className="text-slate-500">Email:</span> {o.email}</p>
+                      <p><span className="text-slate-500">Phone:</span> {o.mobile}</p>
+                      <p><span className="text-slate-500">Profession:</span> {o.profession}</p>
+                      <p><span className="text-slate-500">Country:</span> {o.country}</p>
+                      <p className="md:col-span-2"><span className="text-slate-500">Address:</span> {o.address}</p>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-4">{new Date(o.createdAt?.toMillis() || Date.now()).toLocaleString()}</p>
+                  </div>
+                  <div className="flex justify-end items-start border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-4">
+                    <button onClick={() => handleDeleteEntry('orders', o.id)} className="bg-red-500/10 text-red-400 hover:bg-red-500/20 p-3 rounded-xl h-fit">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {orders.length === 0 && <p className="text-slate-500">No orders yet.</p>}
             </div>
           </div>
         )}

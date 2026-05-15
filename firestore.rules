@@ -31,22 +31,19 @@ service cloud.firestore {
     }
 
     function isValidService(data) {
-      return data.keys().hasAll(['title', 'description', 'iconName', 'createdAt', 'updatedAt']) &&
+      return data.keys().hasAll(['title', 'description', 'createdAt']) &&
              data.title is string && data.title.size() <= 128 &&
-             data.description is string && data.description.size() <= 1000 &&
-             data.iconName is string && data.iconName.size() <= 64;
+             data.description is string && data.description.size() <= 1000;
     }
 
     function isValidGalleryItem(data) {
-      return data.keys().hasAll(['type', 'url', 'createdAt', 'updatedAt']) &&
-             data.type is string && (data.type == 'image' || data.type == 'video') &&
+      return data.keys().hasAll(['url', 'createdAt']) &&
              data.url is string && data.url.size() <= 2048;
     }
 
     function isValidReview(data) {
-      return data.keys().hasAll(['reviewerName', 'reviewerEmail', 'rating', 'content', 'createdAt', 'updatedAt']) &&
+      return data.keys().hasAll(['reviewerName', 'rating', 'content', 'createdAt']) &&
              data.reviewerName is string && data.reviewerName.size() <= 128 &&
-             data.reviewerEmail is string && data.reviewerEmail.size() <= 256 &&
              data.rating is number && data.rating >= 1 && data.rating <= 5 &&
              data.content is string && data.content.size() <= 1000;
     }
@@ -59,38 +56,44 @@ service cloud.firestore {
     }
     
     match /visitors/{visitorId} {
-      // Anyone can create a visitor log (anonymous or not)
       allow create: if isValidId(visitorId) && isValidVisitor(incoming());
       allow read, update, delete: if isAdmin();
     }
 
     match /services/{serviceId} {
-      allow list: if true; // Public list
-      allow get: if isValidId(serviceId); // Public get
-      allow create: if isAdmin() && isValidId(serviceId) && isValidService(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
-      allow update: if isAdmin() && isValidId(serviceId) && isValidService(incoming()) && incoming().updatedAt == request.time && incoming().createdAt == existing().createdAt;
+      allow read: if true; 
+      allow create: if isAdmin() && isValidId(serviceId);
+      allow update: if isAdmin() && isValidId(serviceId);
       allow delete: if isAdmin() && isValidId(serviceId);
     }
 
     match /gallery/{galleryId} {
-      allow list: if true;
-      allow get: if isValidId(galleryId);
-      allow create: if isAdmin() && isValidId(galleryId) && isValidGalleryItem(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
-      allow update: if isAdmin() && isValidId(galleryId) && isValidGalleryItem(incoming()) && incoming().updatedAt == request.time && incoming().createdAt == existing().createdAt;
+      allow read: if true;
+      allow create: if isAdmin() && isValidId(galleryId);
+      allow update: if isValidId(galleryId) && (
+        isAdmin() || 
+        (isSignedIn() && incoming().diff(existing()).affectedKeys().hasOnly(['likes'])) ||
+        (isSignedIn() && incoming().diff(existing()).affectedKeys().hasOnly(['comments']))
+      );
       allow delete: if isAdmin() && isValidId(galleryId);
     }
 
+    match /portfolio/{portId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(portId);
+    }
+
+    match /orders/{orderId} {
+      allow create: if isValidId(orderId);
+      allow read, update, delete: if isAdmin() && isValidId(orderId);
+    }
+
     match /reviews/{reviewId} {
-      allow list: if true;
-      allow get: if isValidId(reviewId);
-      // Anyone can leave a review if they're signed in (or anonymous, but let's say anyone for now if it's open, but it's better to require sign-in)
-      // The prompt says "Editable reviews", so maybe users can edit. But if there is no login for normal users, how do they edit?
-      // "No signup" for Gmail access page. The admin panel is the only place with login mentioned.
-      // So reviews can either be created by anyone, or maybe admin manages them entirely? Admin features: "Edit customer reviews".
-      // Let's allow public to create reviews, but restrict update/delete to admin.
-      allow create: if isValidId(reviewId) && isValidReview(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
-      allow update: if isAdmin() && isValidId(reviewId) && isValidReview(incoming()) && incoming().updatedAt == request.time && incoming().createdAt == existing().createdAt;
+      allow read: if true;
+      allow create: if isValidId(reviewId);
+      allow update: if isAdmin() && isValidId(reviewId);
       allow delete: if isAdmin() && isValidId(reviewId);
     }
   }
 }
+

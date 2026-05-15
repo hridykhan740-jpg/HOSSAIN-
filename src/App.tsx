@@ -14,6 +14,8 @@ import LandingPage from './pages/LandingPage';
 import AccessPage from './pages/AccessPage';
 import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
+import GalleryFeedPage from './pages/GalleryFeedPage';
+import PortfolioPage from './pages/PortfolioPage';
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -76,6 +78,8 @@ export default function App() {
         <Route path="/access" element={<AccessPage />} />
         <Route path="/home" element={<HomePage isAdmin={isAdmin} />} />
         <Route path="/admin" element={<AdminPage isAdmin={isAdmin} />} />
+        <Route path="/gallery" element={<GalleryFeedPage />} />
+        <Route path="/portfolio/:category" element={<PortfolioPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
