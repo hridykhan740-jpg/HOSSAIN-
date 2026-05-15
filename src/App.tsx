@@ -16,6 +16,7 @@ import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
 import GalleryFeedPage from './pages/GalleryFeedPage';
 import PortfolioPage from './pages/PortfolioPage';
+import BackToTop from './components/BackToTop';
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -73,6 +74,7 @@ export default function App() {
   return (
     <Router>
       <Toaster position="top-right" toastOptions={{ style: { background: '#1e293b', color: '#fff' } }} />
+      <BackToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/access" element={<AccessPage />} />

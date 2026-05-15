@@ -370,7 +370,37 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
         {activeTab === 'gallery' && (
           <div>
             <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl mb-8">
-              <h3 className="text-lg font-medium mb-4">Upload New Item</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">Upload New Item</h3>
+                <button
+                  onClick={async () => {
+                     const seenUrls = new Set();
+                     const duplicates = [];
+                     for (const item of gallery) {
+                       if (seenUrls.has(item.url)) {
+                         duplicates.push(item);
+                       } else {
+                         seenUrls.add(item.url);
+                       }
+                     }
+                     if (duplicates.length === 0) {
+                       toast.success('No duplicates found!');
+                       return;
+                     }
+                     try {
+                        for (const dup of duplicates) {
+                          await deleteDoc(doc(db, 'gallery', dup.id));
+                        }
+                        toast.success(`Removed ${duplicates.length} duplicate items`);
+                     } catch(err: any) {
+                        toast.error(err.message);
+                     }
+                  }}
+                  className="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-white/10 transition-colors"
+                >
+                  Remove Duplicates
+                </button>
+              </div>
               <form onSubmit={handleAddGalleryItem} className="flex flex-col gap-4">
                 <div className="flex gap-4 items-center">
                   <div className="flex-1 flex flex-col gap-2">
