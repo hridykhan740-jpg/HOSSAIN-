@@ -306,9 +306,10 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
                         <span className="truncate pr-2" title={g.caption || 'No caption'}>{g.caption || 'No caption'}</span>
                         <button 
                           onClick={() => { setEditingCaptionId(g.id); setEditingCaptionValue(g.caption || ''); }} 
-                          className="opacity-0 group-hover/caption:opacity-100 text-slate-400 hover:text-white transition-opacity shrink-0"
+                          className="flex items-center gap-1 text-xs bg-black/50 hover:bg-black/80 px-2 py-1 rounded text-slate-300 hover:text-white transition-colors shrink-0"
                         >
-                          <Edit2 className="w-3.5 h-3.5" />
+                          <Edit2 className="w-3 h-3" />
+                          Edit
                         </button>
                       </div>
                     )}

@@ -51,7 +51,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
             </h1>
             <p className="text-indigo-400 font-medium text-lg mb-6 flex items-center justify-center md:justify-start gap-4 flex-wrap">
               <span className="flex items-center gap-2"><Phone className="w-4 h-4"/> +8801876357998</span>
-              <span className="flex items-center gap-2"><Mail className="w-4 h-4"/> hridykhan740@gmail.com</span>
+              <span className="flex items-center gap-2"><Mail className="w-4 h-4"/> mhossenali740@gmail.com</span>
             </p>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">

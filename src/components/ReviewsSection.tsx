@@ -29,6 +29,12 @@ export default function ReviewsSection({ isAdmin }: { isAdmin: boolean }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
     setLoading(true);
     try {
       let screenshotUrl = '';
@@ -126,6 +132,10 @@ export default function ReviewsSection({ isAdmin }: { isAdmin: boolean }) {
               <div>
                 <label className="block text-sm text-slate-400 mb-1">Name</label>
                 <input required value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500" />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-400 mb-1">Email (optional)</label>
+                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="anonymous@gmail.com" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-1">Rating (1-5)</label>
