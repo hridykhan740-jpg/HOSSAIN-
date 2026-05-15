@@ -29,7 +29,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"
       >
-        <div className="bg-white dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
+        <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
           
           {/* Cover Photo */}
           <div className="w-full h-48 md:h-64 lg:h-80 relative group">
@@ -43,7 +43,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
               <motion.button 
                 onClick={() => navigate('/admin')}
                 whileHover={{ scale: 1.05 }}
-                className="absolute top-4 right-16 px-4 py-2 bg-slate-100 dark:bg-black/50 backdrop-blur-sm text-white border border-white/20 rounded-xl flex items-center gap-2 hover:bg-black/70 transition-colors z-20"
+                className="absolute top-4 right-16 px-4 py-2 bg-black/5 dark:bg-black/50 backdrop-blur-sm text-slate-900 dark:text-white border border-slate-200 dark:border-white/20 rounded-xl flex items-center gap-2 hover:bg-black/10 dark:hover:bg-black/70 transition-colors z-20"
               >
                 <Settings className="w-4 h-4 md:w-5 md:h-5" />
                 <span className="hidden md:inline">Admin Panel</span>

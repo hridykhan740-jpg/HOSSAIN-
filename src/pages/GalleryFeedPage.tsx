@@ -78,7 +78,7 @@ export default function GalleryFeedPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white selection:bg-indigo-500/30">
-      <header className="sticky top-0 z-50 bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 p-4">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 p-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <button onClick={() => navigate('/home')} className="p-2 hover:bg-white/10 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6" />
@@ -151,7 +151,7 @@ export default function GalleryFeedPage() {
                       onChange={(e) => setCommentInput(item.id, e.target.value)}
                       placeholder={auth.currentUser ? "Add a comment..." : "Sign in to comment"}
                       disabled={!auth.currentUser}
-                      className="w-full bg-slate-100 dark:bg-slate-800 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-12 disabled:opacity-50"
+                      className="w-full bg-slate-100 dark:bg-slate-800 border border-white/10 rounded-full px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-12 disabled:opacity-50"
                     />
                     <button 
                       type="submit"

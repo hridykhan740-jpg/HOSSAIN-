@@ -99,7 +99,7 @@ export default function ActionLinks() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-400">Full Name</label>
-                    <input required name="name" type="text" className="w-full bg-slate-100 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder:text-slate-600" placeholder="John Doe" />
+                    <input required name="name" type="text" className="w-full bg-black/5 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder:text-slate-600" placeholder="John Doe" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-400">Profession</label>

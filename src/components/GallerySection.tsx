@@ -175,7 +175,7 @@ export default function GallerySection() {
                           onChange={(e) => setGridCommentText(e.target.value)}
                           placeholder={auth.currentUser ? "Write a comment..." : "Sign in to comment"}
                           disabled={!auth.currentUser}
-                          className="w-full bg-slate-100 dark:bg-slate-800 border border-white/5 rounded-full px-4 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-10 disabled:opacity-50"
+                          className="w-full bg-slate-100 dark:bg-slate-200 dark:bg-slate-800 border border-white/5 rounded-full px-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-10 disabled:opacity-50"
                           autoFocus
                         />
                         <button 
@@ -309,7 +309,7 @@ export default function GallerySection() {
                         onChange={(e) => setCommentText(e.target.value)}
                         placeholder={auth.currentUser ? "Write a comment..." : "Sign in to comment..."}
                         disabled={!auth.currentUser}
-                        className="w-full bg-slate-800 border-none rounded-full px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all pr-10 disabled:opacity-50"
+                        className="w-full bg-black/5 dark:bg-slate-800 border-none rounded-full px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all pr-10 disabled:opacity-50"
                       />
                       <button 
                         type="submit"

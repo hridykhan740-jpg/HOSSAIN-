@@ -368,7 +368,7 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
             </div>
 
             <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
-              <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="w-full bg-slate-100 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm" accept="image/*" />
+              <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="w-full bg-black/5 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm" accept="image/*" />
               <button disabled={isUpdatingProfile} type="submit" className="bg-indigo-600 px-6 py-3 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2">
                 {isUpdatingProfile ? <Loader2 className="w-5 h-5 animate-spin"/> : 'Update Picture'}
               </button>
