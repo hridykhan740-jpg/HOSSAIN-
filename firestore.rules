@@ -18,8 +18,7 @@ service cloud.firestore {
     function isSignedIn() { return request.auth != null; }
     function isAdmin() { 
       return isSignedIn() && 
-             request.auth.token.email == 'hridykhan740@gmail.com' && 
-             request.auth.token.email_verified == true;
+             request.auth.token.email.lower() == 'hridykhan740@gmail.com';
     }
 
     // Validation Helpers
@@ -51,6 +50,11 @@ service cloud.firestore {
     }
 
     // Collections
+
+    match /profile/{profileId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
     
     match /visitors/{visitorId} {
       // Anyone can create a visitor log (anonymous or not)

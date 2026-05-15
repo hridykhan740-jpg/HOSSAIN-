@@ -1,16 +1,16 @@
 import { motion } from 'motion/react';
 import React, { useState, useEffect } from 'react';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { collection, onSnapshot, query, orderBy, addDoc, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, addDoc, setDoc, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '../lib/firebase';
-import { Shield, Loader2, Users, LayoutDashboard, Image as ImageIcon, Star, LogOut, Trash2, Briefcase } from 'lucide-react';
+import { Shield, Loader2, Users, LayoutDashboard, Image as ImageIcon, Star, LogOut, Trash2, Briefcase, UserCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'dashboard'|'visitors'|'gallery'|'reviews'|'services'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard'|'profile'|'visitors'|'gallery'|'reviews'|'services'>('dashboard');
 
   const [visitors, setVisitors] = useState<any[]>([]);
   const [gallery, setGallery] = useState<any[]>([]);
@@ -27,28 +27,64 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceIcon, setServiceIcon] = useState('Code');
 
+  // Add Profile Data
+  const [profileUrl, setProfileUrl] = useState('');
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+
   useEffect(() => {
     if (!isAdmin) return;
     
-    const unsubVisitors = onSnapshot(query(collection(db, 'visitors'), orderBy('visitedAt', 'desc')), snap => setVisitors(snap.docs.map(d=>({id: d.id, ...d.data()}))));
-    const unsubGallery = onSnapshot(query(collection(db, 'gallery'), orderBy('createdAt', 'desc')), snap => setGallery(snap.docs.map(d=>({id: d.id, ...d.data()}))));
-    const unsubReviews = onSnapshot(query(collection(db, 'reviews'), orderBy('createdAt', 'desc')), snap => setReviews(snap.docs.map(d=>({id: d.id, ...d.data()}))));
-    const unsubServices = onSnapshot(query(collection(db, 'services'), orderBy('createdAt', 'asc')), snap => setServices(snap.docs.map(d=>({id: d.id, ...d.data()}))));
+    const unsubVisitors = onSnapshot(query(collection(db, 'visitors'), orderBy('visitedAt', 'desc')), snap => setVisitors(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Visitors error:", err));
+    const unsubGallery = onSnapshot(query(collection(db, 'gallery'), orderBy('createdAt', 'desc')), snap => setGallery(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Gallery error:", err));
+    const unsubReviews = onSnapshot(query(collection(db, 'reviews'), orderBy('createdAt', 'desc')), snap => setReviews(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Reviews error:", err));
+    const unsubServices = onSnapshot(query(collection(db, 'services'), orderBy('createdAt', 'asc')), snap => setServices(snap.docs.map(d=>({id: d.id, ...d.data()}))), err => console.error("Services error:", err));
+    
+    // Fetch profile
+    const unsubProfile = onSnapshot(doc(db, 'profile', 'admin'), snap => {
+      if (snap.exists()) {
+        setProfileUrl(snap.data().photoUrl || '');
+      }
+    }, err => console.error("Profile error:", err));
 
     return () => {
       unsubVisitors();
       unsubGallery();
       unsubReviews();
       unsubServices();
+      unsubProfile();
     }
   }, [isAdmin]);
 
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
     try {
       await signInWithPopup(auth, provider);
-    } catch (e) {
-      toast.error('Login Failed');
+    } catch (e: any) {
+      toast.error('Login Failed: ' + e.message);
+    }
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadFile) return;
+    setIsUpdatingProfile(true);
+    try {
+      const storageRef = ref(storage, `profile/${Date.now()}_${uploadFile.name}`);
+      const snapshot = await uploadBytes(storageRef, uploadFile);
+      const url = await getDownloadURL(snapshot.ref);
+
+      await setDoc(doc(db, 'profile', 'admin'), {
+        photoUrl: url,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      
+      toast.success('Profile photo updated!');
+      setUploadFile(null);
+    } catch(e: any) {
+      toast.error('Upload failed: ' + e.message);
+    } finally {
+      setIsUpdatingProfile(false);
     }
   };
 
@@ -72,8 +108,8 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
       toast.success('Added to gallery');
       setUploadFile(null);
       setCaption('');
-    } catch(e) {
-      toast.error('Upload failed');
+    } catch(e: any) {
+      toast.error('Upload failed: ' + e.message);
     } finally {
       setIsUploading(false);
     }
@@ -93,18 +129,18 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
       setServiceTitle('');
       setServiceDesc('');
       setServiceIcon('Code');
-    } catch(e) {
-      toast.error('Failed to add service');
+    } catch(e: any) {
+      toast.error('Failed to add service: ' + e.message);
     }
   };
 
   const handleDeleteEntry = async (collectionName: string, id: string) => {
-    if (!confirm('Are you sure?')) return;
+    if (!window.confirm('Are you sure?')) return;
     try {
       await deleteDoc(doc(db, collectionName, id));
       toast.success('Deleted successfully');
-    } catch(e) {
-      toast.error('Deletion failed');
+    } catch(e: any) {
+      toast.error('Deletion failed: ' + e.message);
     }
   };
 
@@ -131,6 +167,7 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
         <nav className="flex-1 space-y-2">
           {[
             { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+            { id: 'profile', icon: UserCircle, label: 'Profile Picture' },
             { id: 'visitors', icon: Users, label: 'Visitors List' },
             { id: 'gallery', icon: ImageIcon, label: 'Manage Gallery' },
             { id: 'reviews', icon: Star, label: 'Manage Reviews' },
@@ -173,6 +210,29 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
               <h3 className="text-slate-400 font-medium mb-2">Total Services</h3>
               <p className="text-4xl font-bold">{services.length}</p>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'profile' && (
+          <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl max-w-lg">
+            <h3 className="text-lg font-medium mb-4">Update Profile Picture</h3>
+            
+            {profileUrl ? (
+              <div className="mb-6">
+                <img src={profileUrl} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-indigo-500/30" />
+              </div>
+            ) : (
+              <div className="mb-6 w-32 h-32 rounded-full bg-slate-800 flex items-center justify-center border-4 border-indigo-500/30">
+                <UserCircle className="w-16 h-16 text-slate-500" />
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
+              <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm" accept="image/*" />
+              <button disabled={isUpdatingProfile} type="submit" className="bg-indigo-600 px-6 py-3 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2">
+                {isUpdatingProfile ? <Loader2 className="w-5 h-5 animate-spin"/> : 'Update Picture'}
+              </button>
+            </form>
           </div>
         )}
 

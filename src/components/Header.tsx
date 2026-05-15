@@ -1,9 +1,24 @@
 import { motion } from 'motion/react';
+import React, { useEffect, useState } from 'react';
 import { Phone, Mail, Facebook, MessageCircle, MessageSquare, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const navigate = useNavigate();
+  const [profileUrl, setProfileUrl] = useState('');
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'profile', 'admin'), snap => {
+      if (snap.exists() && snap.data().photoUrl) {
+        setProfileUrl(snap.data().photoUrl);
+      }
+    }, err => {
+      console.error(err);
+    });
+    return unsub;
+  }, []);
 
   return (
     <motion.header 
@@ -22,7 +37,11 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
             className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-1 shrink-0 shadow-xl"
           >
             <div className="w-full h-full rounded-full bg-slate-900 overflow-hidden border-4 border-slate-900 object-cover flex items-center justify-center text-5xl">
-              👨‍💻
+              {profileUrl ? (
+                <img src={profileUrl} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                '👨‍💻'
+              )}
             </div>
           </motion.div>
 
