@@ -21,6 +21,7 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
 
   // Add Gallery Data
   const [uploadFile, setUploadFile] = useState<File|null>(null);
+  const [galleryUploadUrl, setGalleryUploadUrl] = useState('');
   const [caption, setCaption] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -112,41 +113,57 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
 
   const handleAddGalleryItem = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!uploadFile) return;
+    if (!uploadFile && !galleryUploadUrl) return;
     setIsUploading(true);
     setGalleryUploadProgress(0);
     try {
-      const isVideo = uploadFile.type.startsWith('video/');
-      const storageRef = ref(storage, `gallery/${Date.now()}_${uploadFile.name}`);
-      
-      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
-      
-      uploadTask.on('state_changed', 
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setGalleryUploadProgress(Math.round(progress));
-        },
-        (error) => {
-          toast.error('Upload failed: ' + error.message);
-          setIsUploading(false);
-          setGalleryUploadProgress(0);
-        },
-        async () => {
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          await addDoc(collection(db, 'gallery'), {
-            type: isVideo ? 'video' : 'image',
-            url,
-            caption,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
-          toast.success('Added to gallery');
-          setUploadFile(null);
-          setCaption('');
-          setIsUploading(false);
-          setGalleryUploadProgress(0);
-        }
-      );
+      if (galleryUploadUrl) {
+        // Assume image if using simple URL, but user could input video url. Just checking extension roughly.
+        const isVideo = galleryUploadUrl.includes('.mp4') || galleryUploadUrl.includes('.webm');
+        await addDoc(collection(db, 'gallery'), {
+          type: isVideo ? 'video' : 'image',
+          url: galleryUploadUrl,
+          caption,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        toast.success('Added to gallery via URL');
+        setGalleryUploadUrl('');
+        setCaption('');
+        setIsUploading(false);
+      } else if (uploadFile) {
+        const isVideo = uploadFile.type.startsWith('video/');
+        const storageRef = ref(storage, `gallery/${Date.now()}_${uploadFile.name}`);
+        
+        const uploadTask = uploadBytesResumable(storageRef, uploadFile);
+        
+        uploadTask.on('state_changed', 
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setGalleryUploadProgress(Math.round(progress));
+          },
+          (error) => {
+            toast.error('Upload failed: ' + error.message);
+            setIsUploading(false);
+            setGalleryUploadProgress(0);
+          },
+          async () => {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            await addDoc(collection(db, 'gallery'), {
+              type: isVideo ? 'video' : 'image',
+              url,
+              caption,
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp()
+            });
+            toast.success('Added to gallery');
+            setUploadFile(null);
+            setCaption('');
+            setIsUploading(false);
+            setGalleryUploadProgress(0);
+          }
+        );
+      }
     } catch(e: any) {
       toast.error('Upload failed: ' + e.message);
       setIsUploading(false);
@@ -354,12 +371,24 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
           <div>
             <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl mb-8">
               <h3 className="text-lg font-medium mb-4">Upload New Item</h3>
-              <form onSubmit={handleAddGalleryItem} className="flex gap-4">
-                <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm" accept="image/*,video/*" />
-                <input type="text" placeholder="Caption (optional)" value={caption} onChange={e=>setCaption(e.target.value)} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
-                <button disabled={isUploading} type="submit" className="bg-indigo-600 px-6 py-2 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center gap-2">
-                  {isUploading ? <><Loader2 className="w-4 h-4 animate-spin"/> {galleryUploadProgress}%</> : 'Upload'}
-                </button>
+              <form onSubmit={handleAddGalleryItem} className="flex flex-col gap-4">
+                <div className="flex gap-4 items-center">
+                  <div className="flex-1 flex flex-col gap-2">
+                    <label className="text-xs text-slate-400 font-medium">Upload File</label>
+                    <input type="file" onChange={e=>setUploadFile(e.target.files?.[0] || null)} disabled={!!galleryUploadUrl} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm disabled:opacity-50" accept="image/*,video/*" />
+                  </div>
+                  <div className="flex items-center text-slate-500 font-medium mt-6">OR</div>
+                  <div className="flex-1 flex flex-col gap-2">
+                    <label className="text-xs text-slate-400 font-medium">Image/Video URL</label>
+                    <input type="url" placeholder="https://example.com/image.jpg" value={galleryUploadUrl} onChange={e=>setGalleryUploadUrl(e.target.value)} disabled={!!uploadFile} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 disabled:opacity-50" />
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <input type="text" placeholder="Caption (optional)" value={caption} onChange={e=>setCaption(e.target.value)} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+                  <button disabled={isUploading || (!uploadFile && !galleryUploadUrl)} type="submit" className="bg-indigo-600 px-6 py-2 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2 min-w-[120px] disabled:opacity-50">
+                    {isUploading ? <><Loader2 className="w-4 h-4 animate-spin"/> {galleryUploadProgress}%</> : 'Submit'}
+                  </button>
+                </div>
               </form>
               {isUploading && (
                 <div className="mt-4 w-full bg-slate-800 rounded-full h-2">
