@@ -132,11 +132,38 @@ export default function ActionLinks() {
                   <label className="text-xs font-medium text-slate-400">Service Required</label>
                   <select required name="service_type" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white appearance-none cursor-pointer">
                     <option value="" disabled selected>Select a service</option>
-                    <option value="ecommerce">E-commerce Development</option>
-                    <option value="website">Website Development</option>
-                    <option value="app">App Development</option>
-                    <option value="marketing">Digital Marketing</option>
-                    <option value="other">Other</option>
+                    <optgroup label="Development">
+                      <option value="E-commerce Development">E-commerce Development</option>
+                      <option value="Website Development">Website Development</option>
+                      <option value="App Development">App Development</option>
+                    </optgroup>
+                    <optgroup label="Marketing">
+                      <option value="Digital Marketing">Digital Marketing</option>
+                      <option value="Online Marketing">Online Marketing</option>
+                      <option value="Gmail Marketing">Gmail Marketing</option>
+                      <option value="Facebook Ads">Facebook Ads</option>
+                    </optgroup>
+                    <optgroup label="General Services">
+                      <option value="Facebook ID Verification">Facebook ID Verification</option>
+                      <option value="Drop Shipping">Drop Shipping</option>
+                      <option value="International Payment">International Payment</option>
+                    </optgroup>
+                    <optgroup label="Mobile Top Up">
+                      <option value="Mobile Top Up (Banglalink)">Mobile Top Up (Banglalink)</option>
+                      <option value="Mobile Top Up (Grameenphone - GP)">Mobile Top Up (Grameenphone - GP)</option>
+                      <option value="Mobile Top Up (Robi)">Mobile Top Up (Robi)</option>
+                      <option value="Mobile Top Up (Airtel)">Mobile Top Up (Airtel)</option>
+                      <option value="Mobile Top Up (Teletalk)">Mobile Top Up (Teletalk)</option>
+                    </optgroup>
+                    <optgroup label="Utility Bills">
+                      <option value="Electrical Bill">Electrical Bill</option>
+                      <option value="Gas Bill">Gas Bill</option>
+                      <option value="Water Bill">Water Bill</option>
+                      <option value="Internet Bill">Internet Bill</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                      <option value="Other Options">Other Options</option>
+                    </optgroup>
                   </select>
                 </div>
 
