@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import React, { useState, useEffect } from 'react';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { collection, onSnapshot, query, orderBy, addDoc, setDoc, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { auth, db, storage } from '../lib/firebase';
 import { Shield, Loader2, Users, LayoutDashboard, Image as ImageIcon, Star, LogOut, Trash2, Briefcase, UserCircle, Edit2, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -22,10 +22,14 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
   const [caption, setCaption] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
+  const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
+
   // Add Service Data
   const [serviceTitle, setServiceTitle] = useState('');
   const [serviceDesc, setServiceDesc] = useState('');
-  const [serviceIcon, setServiceIcon] = useState('Code');
+  const [serviceCategory, setServiceCategory] = useState('Development');
+  const [serviceUploadFile, setServiceUploadFile] = useState<File|null>(null);
+  const [isServiceUploading, setIsServiceUploading] = useState(false);
 
   // Add Profile Data
   const [profileUrl, setProfileUrl] = useState('');
@@ -96,45 +100,74 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
     e.preventDefault();
     if (!uploadFile) return;
     setIsUploading(true);
+    setGalleryUploadProgress(0);
     try {
       const isVideo = uploadFile.type.startsWith('video/');
       const storageRef = ref(storage, `gallery/${Date.now()}_${uploadFile.name}`);
-      const snapshot = await uploadBytes(storageRef, uploadFile);
-      const url = await getDownloadURL(snapshot.ref);
-
-      await addDoc(collection(db, 'gallery'), {
-        type: isVideo ? 'video' : 'image',
-        url,
-        caption,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-      toast.success('Added to gallery');
-      setUploadFile(null);
-      setCaption('');
+      
+      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
+      
+      uploadTask.on('state_changed', 
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setGalleryUploadProgress(Math.round(progress));
+        },
+        (error) => {
+          toast.error('Upload failed: ' + error.message);
+          setIsUploading(false);
+          setGalleryUploadProgress(0);
+        },
+        async () => {
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          await addDoc(collection(db, 'gallery'), {
+            type: isVideo ? 'video' : 'image',
+            url,
+            caption,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          toast.success('Added to gallery');
+          setUploadFile(null);
+          setCaption('');
+          setIsUploading(false);
+          setGalleryUploadProgress(0);
+        }
+      );
     } catch(e: any) {
       toast.error('Upload failed: ' + e.message);
-    } finally {
       setIsUploading(false);
+      setGalleryUploadProgress(0);
     }
   };
 
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsServiceUploading(true);
     try {
+      let imageUrl = '';
+      if (serviceUploadFile) {
+         const storageRef = ref(storage, `services/${Date.now()}_${serviceUploadFile.name}`);
+         const snapshot = await uploadBytes(storageRef, serviceUploadFile);
+         imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
       await addDoc(collection(db, 'services'), {
         title: serviceTitle,
         description: serviceDesc,
-        iconName: serviceIcon,
+        category: serviceCategory,
+        imageUrl: imageUrl,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
       toast.success('Service added');
       setServiceTitle('');
       setServiceDesc('');
-      setServiceIcon('Code');
+      setServiceCategory('Development');
+      setServiceUploadFile(null);
     } catch(e: any) {
       toast.error('Failed to add service: ' + e.message);
+    } finally {
+      setIsServiceUploading(false);
     }
   };
 
@@ -276,9 +309,14 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
                 <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm" accept="image/*,video/*" />
                 <input type="text" placeholder="Caption (optional)" value={caption} onChange={e=>setCaption(e.target.value)} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
                 <button disabled={isUploading} type="submit" className="bg-indigo-600 px-6 py-2 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center gap-2">
-                  {isUploading ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Upload'}
+                  {isUploading ? <><Loader2 className="w-4 h-4 animate-spin"/> {galleryUploadProgress}%</> : 'Upload'}
                 </button>
               </form>
+              {isUploading && (
+                <div className="mt-4 w-full bg-slate-800 rounded-full h-2">
+                  <div className="bg-indigo-500 h-2 rounded-full transition-all duration-300" style={{ width: `${galleryUploadProgress}%` }}></div>
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {gallery.map(g => (
@@ -343,29 +381,54 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
           <div>
             <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl mb-8 flex flex-col gap-4">
               <h3 className="text-lg font-medium">Add New Service</h3>
-              <form onSubmit={handleAddService} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input required type="text" placeholder="Title" value={serviceTitle} onChange={e=>setServiceTitle(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
-                <input required type="text" placeholder="Description" value={serviceDesc} onChange={e=>setServiceDesc(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
-                <div className="flex gap-4">
-                  <select value={serviceIcon} onChange={e=>setServiceIcon(e.target.value)} className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                    <option value="Code">Code</option>
-                    <option value="ShoppingCart">Shopping Cart</option>
-                    <option value="Mail">Mail</option>
-                    <option value="Globe">Globe</option>
-                    <option value="Smartphone">Smartphone</option>
-                    <option value="Image">Image</option>
-                    <option value="Star">Star</option>
+              <form onSubmit={handleAddService} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">Title</label>
+                  <input required type="text" placeholder="Service Name" value={serviceTitle} onChange={e=>setServiceTitle(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">Description</label>
+                  <input required type="text" placeholder="Short description" value={serviceDesc} onChange={e=>setServiceDesc(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">Category</label>
+                  <select value={serviceCategory} onChange={e=>setServiceCategory(e.target.value)} className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-white">
+                    <option value="Development">Development</option>
+                    <option value="Design">Design</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Apps">Apps</option>
+                    <option value="Other">Other</option>
                   </select>
-                  <button type="submit" className="bg-indigo-600 px-6 py-2 rounded-xl font-medium hover:bg-indigo-500 transition-colors">Add</button>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-slate-400">Image (Optional)</label>
+                  <div className="flex gap-2">
+                    <input type="file" onChange={e=>setServiceUploadFile(e.target.files?.[0] || null)} className="flex-1 min-w-[120px] bg-black/50 border border-white/10 rounded-xl px-2 py-1.5 text-xs" accept="image/*" />
+                    <button disabled={isServiceUploading} type="submit" className="bg-indigo-600 px-4 py-2 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center justify-center">
+                      {isServiceUploading ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Add'}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
             <div className="flex flex-col gap-4">
               {services.map(s => (
-                <div key={s.id} className="bg-slate-900 border border-white/5 p-4 rounded-xl flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-white">{s.title}</h4>
-                    <p className="text-sm text-slate-400">{s.description}</p>
+                <div key={s.id} className="bg-slate-900 border border-white/5 p-4 rounded-xl flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    {s.imageUrl ? (
+                      <img src={s.imageUrl} alt={s.title} className="w-16 h-16 rounded-lg object-cover" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                        <Briefcase className="w-8 h-8 text-indigo-400" />
+                      </div>
+                    )}
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h4 className="font-medium text-white">{s.title}</h4>
+                        <span className="bg-slate-800 text-xs px-2 py-0.5 rounded-full text-slate-300 border border-white/5">{s.category || 'Other'}</span>
+                      </div>
+                      <p className="text-sm text-slate-400">{s.description}</p>
+                    </div>
                   </div>
                   <button onClick={() => handleDeleteEntry('services', s.id)} className="text-red-400 hover:text-red-300 p-2"><Trash2 className="w-5 h-5"/></button>
                 </div>

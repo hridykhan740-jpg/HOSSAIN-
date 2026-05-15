@@ -7,7 +7,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from './lib/firebase';
 
 import LandingPage from './pages/LandingPage';
 import AccessPage from './pages/AccessPage';
@@ -19,6 +20,35 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const seedGallery = async () => {
+      const seeded = localStorage.getItem('gallery_seeded_v3');
+      if (!seeded) {
+        const images = [
+          "https://files.catbox.moe/tb2fj6.jpeg",
+          "https://files.catbox.moe/ksprmk.jpeg",
+          "https://files.catbox.moe/yd7nyj.jpg",
+          "https://files.catbox.moe/knwywh.jpeg"
+        ];
+        for (const url of images) {
+          try {
+            await addDoc(collection(db, 'gallery'), {
+              type: 'image',
+              url: url,
+              caption: '',
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+              likes: [],
+              comments: []
+            });
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        localStorage.setItem('gallery_seeded_v3', 'true');
+      }
+    };
+    seedGallery();
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && user.email?.toLowerCase().trim() === 'hridykhan740@gmail.com') {
         setIsAdmin(true);
