@@ -21,12 +21,12 @@ export default function LandingPage() {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.2, delay: 0.2 }}
-          className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 mb-8"
+          className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 dark:from-indigo-300 dark:via-purple-300 dark:to-pink-300 mb-8"
         >
           Welcome to Our Site
         </motion.h1>
         
-        <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12">
+        <p className="text-slate-700 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-medium">
           Experience a premium digital journey crafted with elegance and precision.
         </p>
 
@@ -34,7 +34,7 @@ export default function LandingPage() {
           whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(139, 92, 246, 0.5)" }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/access')}
-          className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full text-slate-900 dark:text-white font-semibold text-lg overflow-hidden transition-all group"
+          className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full text-white font-semibold text-lg overflow-hidden transition-all group"
         >
           <span className="relative z-10 flex items-center gap-2">
             Please Visit Now

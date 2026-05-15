@@ -121,20 +121,20 @@ export default function GalleryFeedPage({ isAdmin }: { isAdmin?: boolean }) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-xl"
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-xl"
           >
             {/* Header / Caption if any */}
             {(item.caption || isAdmin) && (
-              <div className="p-4 border-b border-white/5 flex justify-between items-start">
+              <div className="p-4 border-b border-slate-100 dark:border-white/5 flex justify-between items-start">
                 {item.caption ? (
-                  <p className="text-slate-200">{item.caption}</p>
+                  <p className="text-slate-800 dark:text-slate-200">{item.caption}</p>
                 ) : (
                   <div></div>
                 )}
                 {isAdmin && (
                   <button 
                     onClick={() => handleDelete(item.id)}
-                    className="p-2 text-red-400 hover:text-white hover:bg-red-500/20 rounded-full transition-colors flex-shrink-0"
+                    className="p-2 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-white hover:bg-red-500/10 dark:hover:bg-red-500/20 rounded-full transition-colors flex-shrink-0"
                     title="Delete item"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -153,19 +153,19 @@ export default function GalleryFeedPage({ isAdmin }: { isAdmin?: boolean }) {
             </div>
             
             {/* Action Bar */}
-            <div className="p-4 border-t border-white/5">
+            <div className="p-4 border-t border-slate-100 dark:border-white/5">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-6">
                   <button 
                     onClick={() => handleLike(item)}
-                    className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-white transition-colors group"
+                    className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors group"
                   >
                     <Heart className={`w-6 h-6 transition-transform group-active:scale-90 ${item.likes?.includes(auth.currentUser?.email) ? 'fill-pink-500 text-pink-500' : ''}`} />
-                    <span className="font-medium">{item.likes?.length || 0}</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{item.likes?.length || 0}</span>
                   </button>
-                  <div className="flex items-center gap-2 text-slate-400">
+                  <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                     <MessageCircle className="w-6 h-6" />
-                    <span className="font-medium">{item.comments?.length || 0}</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{item.comments?.length || 0}</span>
                   </div>
                 </div>
 
@@ -174,8 +174,8 @@ export default function GalleryFeedPage({ isAdmin }: { isAdmin?: boolean }) {
                   <div className="space-y-3 mt-2">
                     {item.comments.map((comment: any) => (
                       <div key={comment.id} className="text-sm">
-                        <span className="font-semibold mr-2">{comment.name}</span>
-                        <span className="text-slate-300">{comment.text}</span>
+                        <span className="font-semibold text-slate-900 dark:text-white mr-2">{comment.name}</span>
+                        <span className="text-slate-700 dark:text-slate-300">{comment.text}</span>
                       </div>
                     ))}
                   </div>
@@ -190,12 +190,12 @@ export default function GalleryFeedPage({ isAdmin }: { isAdmin?: boolean }) {
                       onChange={(e) => setCommentInput(item.id, e.target.value)}
                       placeholder={auth.currentUser ? "Add a comment..." : "Sign in to comment"}
                       disabled={!auth.currentUser}
-                      className="w-full bg-slate-800 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-12 disabled:opacity-50"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-full px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-12 disabled:opacity-50"
                     />
                     <button 
                       type="submit"
                       disabled={!commentInputs[item.id]?.trim() || !auth.currentUser}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-indigo-400 hover:text-indigo-300 hover:bg-slate-700 rounded-full disabled:opacity-50 transition-colors"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full disabled:opacity-50 transition-colors"
                     >
                       <Send className="w-4 h-4" />
                     </button>

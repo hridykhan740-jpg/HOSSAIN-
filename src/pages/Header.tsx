@@ -60,9 +60,9 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
               <motion.div 
                 whileHover={{ scale: 1.05 }}
                 onClick={() => setIsVideoModalOpen(true)}
-                className="cursor-pointer w-32 h-32 md:w-40 md:h-40 rounded-full bg-slate-900 p-1.5 shrink-0 shadow-2xl relative z-20"
+                className="cursor-pointer w-32 h-32 md:w-40 md:h-40 rounded-full bg-white dark:bg-slate-900 p-1.5 shrink-0 shadow-2xl relative z-20"
               >
-                <div className="w-full h-full rounded-full bg-slate-800 overflow-hidden border border-white/10 object-cover flex items-center justify-center text-5xl">
+                <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200 dark:border-white/10 object-cover flex items-center justify-center text-5xl">
                   {profileUrl || true ? (
                     <img src={profileUrl || "https://files.catbox.moe/cy4kjl.jpeg"} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
@@ -72,14 +72,14 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
               </motion.div>
 
               <div className="flex-1 text-center md:text-left mt-2 md:mt-0">
-                <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 tracking-tight">
+                <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
                   Àbdüllāh Aĺ Hỗŝŝâîň
                 </h1>
-                <p className="text-indigo-400 font-medium text-base md:text-lg mb-2 flex items-center justify-center md:justify-start gap-4 flex-wrap">
-                  <span className="flex items-center gap-2 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20"><Phone className="w-4 h-4"/> +8801876357998</span>
-                  <span className="flex items-center gap-2 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20"><Mail className="w-4 h-4"/> mhossenali740@gmail.com</span>
+                <p className="text-indigo-600 dark:text-indigo-400 font-medium text-base md:text-lg mb-2 flex items-center justify-center md:justify-start gap-4 flex-wrap">
+                  <span className="flex items-center gap-2 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 text-indigo-700 dark:text-indigo-300"><Phone className="w-4 h-4"/> +8801876357998</span>
+                  <span className="flex items-center gap-2 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 text-indigo-700 dark:text-indigo-300"><Mail className="w-4 h-4"/> mhossenali740@gmail.com</span>
                 </p>
-                <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base max-w-2xl text-center md:text-left mx-auto md:mx-0 py-2 mb-4">
+                <p className="text-slate-700 dark:text-slate-300 text-sm md:text-base max-w-2xl text-center md:text-left mx-auto md:mx-0 py-2 mb-4 font-medium">
                   Passionate expert in Web & App Development, Digital Marketing, and General Tech Solutions. Dedicated to delivering high-quality and reliable services tailored to your digital growth and business needs.
                 </p>
 
