@@ -364,11 +364,11 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
             <h3 className="text-lg font-medium mb-4">Update Profile Picture</h3>
             
             <div className="mb-6">
-               <img src={profileUrl || "https://i.ibb.co/DH1xjsn1/image-4-2.jpg"} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-indigo-500/30" />
+               <img src={profileUrl || "https://files.catbox.moe/cy4kjl.jpeg"} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-indigo-500/30" />
             </div>
 
             <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
-              <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="w-full bg-black/5 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm" accept="image/*" />
+              <input type="file" required onChange={e=>setUploadFile(e.target.files?.[0] || null)} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm" accept="image/*" />
               <button disabled={isUpdatingProfile} type="submit" className="bg-indigo-600 px-6 py-3 rounded-xl font-medium hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2">
                 {isUpdatingProfile ? <Loader2 className="w-5 h-5 animate-spin"/> : 'Update Picture'}
               </button>
@@ -379,7 +379,7 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
         {activeTab === 'visitors' && (
           <div className="bg-slate-900 border border-white/5 rounded-2xl overflow-hidden">
             <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-100 dark:bg-slate-800/50 text-slate-400 uppercase">
+              <thead className="bg-slate-800/50 text-slate-400 uppercase">
                 <tr><th className="px-6 py-4">Visitor Email</th><th className="px-6 py-4">Visited At</th></tr>
               </thead>
               <tbody className="divide-y divide-white/5">

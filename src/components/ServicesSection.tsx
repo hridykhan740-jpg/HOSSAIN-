@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, Mail, Globe, Code, Smartphone, Image, Star, Briefcase, Megaphone, Laptop, PenTool, Database, Cpu, Layout, Pen, Video, Camera, Wallet, CreditCard, Zap, FileText, CheckCircle, GripHorizontal } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
@@ -79,7 +79,7 @@ export default function ServicesSection() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-700 hover:text-white'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-700 hover:text-white'}`}
             >
               <CatIcon className="w-4 h-4" />
               {cat}
@@ -99,7 +99,7 @@ export default function ServicesSection() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
-              className="group relative bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-white/5 p-8 rounded-3xl hover:bg-slate-800/50 transition-colors overflow-hidden flex flex-col items-start"
+              className="group relative bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-white/5 p-8 rounded-3xl hover:bg-slate-800/50 transition-colors overflow-hidden flex flex-col items-start"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               

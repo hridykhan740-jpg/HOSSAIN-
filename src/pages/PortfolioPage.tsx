@@ -19,7 +19,7 @@ export default function PortfolioPage() {
       // Firebase requires an index if combining where and orderBy, we'll sort client-side for simplicity
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      let fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      let fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
       fetched.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
       setItems(fetched);
     });
@@ -35,7 +35,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white selection:bg-indigo-500/30">
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 p-4">
+      <header className="sticky top-0 z-50 bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button onClick={() => navigate('/home')} className="p-2 hover:bg-white/10 rounded-full transition-colors flex items-center gap-2">
             <ArrowLeft className="w-5 h-5" />
@@ -56,7 +56,7 @@ export default function PortfolioPage() {
               transition={{ delay: i * 0.1 }}
               className="bg-slate-900 border border-white/10 rounded-3xl overflow-hidden group hover:border-white/20 transition-all shadow-xl"
             >
-              <div className="aspect-video w-full bg-slate-100 dark:bg-slate-800 relative overflow-hidden flex items-center justify-center">
+              <div className="aspect-video w-full bg-slate-800 relative overflow-hidden flex items-center justify-center">
                 {item.imageUrl ? (
                   <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
@@ -67,7 +67,7 @@ export default function PortfolioPage() {
                     href={item.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="absolute inset-0 bg-black/5 dark:bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm"
+                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm"
                   >
                     <span className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform">
                       Visit Site <ExternalLink className="w-4 h-4" />

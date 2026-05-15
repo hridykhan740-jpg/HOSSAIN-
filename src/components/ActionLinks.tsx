@@ -1,14 +1,39 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Camera, ShoppingCart, Globe, Smartphone, Send, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
+const SERVICE_CATEGORIES = [
+  {
+    name: 'Development',
+    items: ['E-commerce Development', 'Website Development', 'App Development']
+  },
+  {
+    name: 'Marketing',
+    items: ['Digital Marketing', 'Online Marketing', 'Gmail Marketing', 'Facebook Ads']
+  },
+  {
+    name: 'General Services',
+    items: ['Facebook ID Verification', 'Drop Shipping', 'International Payment']
+  },
+  {
+    name: 'Mobile Top Up',
+    items: ['Mobile Top Up (Banglalink)', 'Mobile Top Up (Grameenphone - GP)', 'Mobile Top Up (Robi)', 'Mobile Top Up (Airtel)', 'Mobile Top Up (Teletalk)']
+  },
+  {
+    name: 'Utility Bills',
+    items: ['Electrical Bill', 'Gas Bill', 'Water Bill', 'Internet Bill']
+  }
+];
+
 export default function ActionLinks() {
   const navigate = useNavigate();
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectingService, setSelectingService] = useState(false);
+  const [selectedService, setSelectedService] = useState('');
   
   const LINKS = [
     { id: 'gallery', label: 'Premium Gallery', icon: Camera, color: 'from-pink-500 to-rose-500', onClick: () => navigate('/gallery') },
@@ -58,7 +83,7 @@ export default function ActionLinks() {
               className={`relative overflow-hidden group bg-white dark:bg-slate-900 border border-white/5 rounded-2xl p-6 flex flex-col items-center gap-4 hover:border-white/20 transition-colors shadow-lg`}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
-              <div className={`p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white group-hover:scale-110 transition-transform bg-gradient-to-br ${link.color}`}>
+              <div className={`p-4 rounded-xl bg-slate-800 text-slate-900 dark:text-white group-hover:scale-110 transition-transform bg-gradient-to-br ${link.color}`}>
                 <link.icon className="w-6 h-6 text-white" />
               </div>
               <span className="font-medium text-slate-300 group-hover:text-white transition-colors text-center text-sm md:text-base">
@@ -95,11 +120,50 @@ export default function ActionLinks() {
                 <p className="text-slate-400 text-sm">Fill out your details to get started with our services.</p>
               </div>
 
+              {selectingService ? (
+                <div className="space-y-2 h-full flex flex-col">
+                  <div className="flex items-center gap-4 mb-4">
+                    <button onClick={() => setSelectingService(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 className="text-lg md:text-xl font-bold text-white">Select a Service</h3>
+                  </div>
+                  <div className="space-y-8 overflow-y-auto pr-2 pb-10 flex-1 hide-scrollbar">
+                    {SERVICE_CATEGORIES.map(category => (
+                      <div key={category.name} className="space-y-3">
+                        <h4 className="text-xs md:text-sm font-bold text-indigo-400 gap-2 flex items-center tracking-wider px-1">
+                          <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                          {category.name}
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {category.items.map(item => (
+                            <button
+                              key={item}
+                              type="button"
+                              onClick={() => {
+                                setSelectedService(item);
+                                setSelectingService(false);
+                              }}
+                              className={`p-4 rounded-xl border text-left text-sm transition-all ${
+                                selectedService === item 
+                                  ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-lg shadow-indigo-500/10' 
+                                  : 'bg-black/20 border-white/5 text-slate-300 hover:bg-white/5 hover:border-white/10'
+                              }`}
+                            >
+                              {item}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
               <form onSubmit={handleOrderSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-400">Full Name</label>
-                    <input required name="name" type="text" className="w-full bg-black/5 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder:text-slate-600" placeholder="John Doe" />
+                    <input required name="name" type="text" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white placeholder:text-slate-600" placeholder="John Doe" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-400">Profession</label>
@@ -130,41 +194,16 @@ export default function ActionLinks() {
 
                 <div className="space-y-1 pb-4">
                   <label className="text-xs font-medium text-slate-400">Service Required</label>
-                  <select required name="service_type" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white appearance-none cursor-pointer">
-                    <option value="" disabled selected>Select a service</option>
-                    <optgroup label="Development">
-                      <option value="E-commerce Development">E-commerce Development</option>
-                      <option value="Website Development">Website Development</option>
-                      <option value="App Development">App Development</option>
-                    </optgroup>
-                    <optgroup label="Marketing">
-                      <option value="Digital Marketing">Digital Marketing</option>
-                      <option value="Online Marketing">Online Marketing</option>
-                      <option value="Gmail Marketing">Gmail Marketing</option>
-                      <option value="Facebook Ads">Facebook Ads</option>
-                    </optgroup>
-                    <optgroup label="General Services">
-                      <option value="Facebook ID Verification">Facebook ID Verification</option>
-                      <option value="Drop Shipping">Drop Shipping</option>
-                      <option value="International Payment">International Payment</option>
-                    </optgroup>
-                    <optgroup label="Mobile Top Up">
-                      <option value="Mobile Top Up (Banglalink)">Mobile Top Up (Banglalink)</option>
-                      <option value="Mobile Top Up (Grameenphone - GP)">Mobile Top Up (Grameenphone - GP)</option>
-                      <option value="Mobile Top Up (Robi)">Mobile Top Up (Robi)</option>
-                      <option value="Mobile Top Up (Airtel)">Mobile Top Up (Airtel)</option>
-                      <option value="Mobile Top Up (Teletalk)">Mobile Top Up (Teletalk)</option>
-                    </optgroup>
-                    <optgroup label="Utility Bills">
-                      <option value="Electrical Bill">Electrical Bill</option>
-                      <option value="Gas Bill">Gas Bill</option>
-                      <option value="Water Bill">Water Bill</option>
-                      <option value="Internet Bill">Internet Bill</option>
-                    </optgroup>
-                    <optgroup label="Other">
-                      <option value="Other Options">Other Options</option>
-                    </optgroup>
-                  </select>
+                  <div 
+                    onClick={() => setSelectingService(true)}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 text-white cursor-pointer flex justify-between items-center group hover:bg-black/40 transition-colors"
+                  >
+                    <span className={selectedService ? "text-white" : "text-slate-600"}>
+                      {selectedService || "Select a service"}
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 group-hover:text-white transition-colors"><path d="m9 18 6-6-6-6"/></svg>
+                  </div>
+                  <input type="hidden" name="service_type" value={selectedService} required />
                 </div>
 
                 <motion.button
@@ -176,6 +215,7 @@ export default function ActionLinks() {
                   Submit Order
                 </motion.button>
               </form>
+              )}
             </motion.div>
           </motion.div>
         )}

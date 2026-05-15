@@ -43,7 +43,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
               <motion.button 
                 onClick={() => navigate('/admin')}
                 whileHover={{ scale: 1.05 }}
-                className="absolute top-4 right-16 px-4 py-2 bg-black/5 dark:bg-black/50 backdrop-blur-sm text-slate-900 dark:text-white border border-slate-200 dark:border-white/20 rounded-xl flex items-center gap-2 hover:bg-black/10 dark:hover:bg-black/70 transition-colors z-20"
+                className="absolute top-4 right-16 px-4 py-2 bg-black/50 backdrop-blur-sm text-slate-900 dark:text-white border border-slate-200 dark:border-white/20 rounded-xl flex items-center gap-2 hover:bg-black/10 dark:hover:bg-black/70 transition-colors z-20"
               >
                 <Settings className="w-4 h-4 md:w-5 md:h-5" />
                 <span className="hidden md:inline">Admin Panel</span>
@@ -62,9 +62,9 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
                 onClick={() => setIsVideoModalOpen(true)}
                 className="cursor-pointer w-32 h-32 md:w-40 md:h-40 rounded-full bg-slate-900 p-1.5 shrink-0 shadow-2xl relative z-20"
               >
-                <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden border border-white/10 object-cover flex items-center justify-center text-5xl">
+                <div className="w-full h-full rounded-full bg-slate-800 overflow-hidden border border-white/10 object-cover flex items-center justify-center text-5xl">
                   {profileUrl || true ? (
-                    <img src={profileUrl || "https://i.ibb.co/DH1xjsn1/image-4-2.jpg"} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={profileUrl || "https://files.catbox.moe/cy4kjl.jpeg"} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
                     '👨‍💻'
                   )}

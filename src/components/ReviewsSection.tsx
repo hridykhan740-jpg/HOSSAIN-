@@ -99,7 +99,7 @@ export default function ReviewsSection({ isAdmin }: { isAdmin: boolean }) {
                whileInView={{ opacity: 1, x: 0 }}
                viewport={{ once: true }}
                transition={{ delay: index * 0.1 }}
-               className="snap-center shrink-0 w-[400px] bg-white/40 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-white/10 p-8 rounded-3xl"
+               className="snap-center shrink-0 w-[400px] bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-white/10 p-8 rounded-3xl"
              >
                <div className="flex text-yellow-400 mb-4">
                  {[...Array(5)].map((_, i) => (
@@ -131,7 +131,7 @@ export default function ReviewsSection({ isAdmin }: { isAdmin: boolean }) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-500 dark:text-slate-400 mb-1">Name</label>
-                <input required value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/5 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500" />
+                <input required value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-1">Email (optional)</label>

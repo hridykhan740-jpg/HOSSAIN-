@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 export default function GalleryFeedPage() {
   const [items, setItems] = useState<any[]>([]);
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [filterType, setFilterType] = useState<'all' | 'image' | 'video'>('all');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -76,11 +77,13 @@ export default function GalleryFeedPage() {
     setCommentInputs(prev => ({ ...prev, [id]: value }));
   };
 
+  const filteredItems = filterType === 'all' ? items : items.filter(i => i.type === filterType);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white selection:bg-indigo-500/30">
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 p-4">
+      <header className="sticky top-0 z-50 bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 p-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <button onClick={() => navigate('/home')} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+          <button onClick={() => navigate('/home')} className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-xl font-bold font-sans">Gallery Feed</h1>
@@ -89,7 +92,19 @@ export default function GalleryFeedPage() {
       </header>
       
       <main className="max-w-xl mx-auto py-8 px-4 space-y-8 pb-20">
-        {items.map(item => (
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+          {['all', 'image', 'video'].map((type) => (
+            <button
+              key={type}
+              onClick={() => setFilterType(type as 'all' | 'image' | 'video')}
+              className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium transition-colors ${filterType === type ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-black/5 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:bg-black/10 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'}`}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {filteredItems.map(item => (
           <motion.article 
             key={item.id}
             initial={{ opacity: 0, y: 20 }}
@@ -151,7 +166,7 @@ export default function GalleryFeedPage() {
                       onChange={(e) => setCommentInput(item.id, e.target.value)}
                       placeholder={auth.currentUser ? "Add a comment..." : "Sign in to comment"}
                       disabled={!auth.currentUser}
-                      className="w-full bg-slate-100 dark:bg-slate-800 border border-white/10 rounded-full px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-12 disabled:opacity-50"
+                      className="w-full bg-slate-800 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all pr-12 disabled:opacity-50"
                     />
                     <button 
                       type="submit"
@@ -166,7 +181,7 @@ export default function GalleryFeedPage() {
             </div>
           </motion.article>
         ))}
-        {items.length === 0 && (
+        {filteredItems.length === 0 && (
           <div className="text-center text-slate-500 py-10">
             No posts yet.
           </div>

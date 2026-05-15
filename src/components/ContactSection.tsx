@@ -28,7 +28,7 @@ export default function ContactSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm text-slate-500 dark:text-slate-400 mb-2">Name</label>
-                <input required className="w-full bg-black/5 dark:bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="John Doe" />
+                <input required className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors" placeholder="John Doe" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-2">Gmail</label>
