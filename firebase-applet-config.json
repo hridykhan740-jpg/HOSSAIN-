@@ -1,10 +1,10 @@
 {
-  "projectId": "grand-reactor-d5xj8",
-  "appId": "1:354994787030:web:a51f0a9fa286e859766f77",
-  "apiKey": "AIzaSyBXmDURRta5JSEb4ftC8pd9CzxR5C3mQfc",
-  "authDomain": "grand-reactor-d5xj8.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-3d461d44-75d0-430e-a11d-d45062c1dd69",
-  "storageBucket": "grand-reactor-d5xj8.firebasestorage.app",
-  "messagingSenderId": "354994787030",
-  "measurementId": ""
+  "apiKey": "AIzaSyBtJp-r4TLsj68I-FKgb2Ezor3Aqxa32zg",
+  "authDomain": "real-final-website.firebaseapp.com",
+  "projectId": "real-final-website",
+  "storageBucket": "real-final-website.firebasestorage.app",
+  "messagingSenderId": "905766847514",
+  "appId": "1:905766847514:web:134cc01df3907980827da3",
+  "measurementId": "G-MRC11HV7MD",
+  "firestoreDatabaseId": "(default)"
 }

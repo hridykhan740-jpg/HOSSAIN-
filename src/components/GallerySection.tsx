@@ -39,8 +39,8 @@ export default function GallerySection() {
           >
             {item.type === 'video' ? (
               <div className="relative">
-                <img src={item.thumbnailUrl || item.url} alt={item.caption} className="w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                <video src={item.url} muted loop playsInline autoPlay className="w-full object-cover transition-transform duration-500 group-hover:scale-110 aspect-video" />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
                   <Play className="w-12 h-12 text-white opacity-80" />
                 </div>
               </div>

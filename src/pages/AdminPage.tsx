@@ -4,7 +4,7 @@ import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { collection, onSnapshot, query, orderBy, addDoc, setDoc, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '../lib/firebase';
-import { Shield, Loader2, Users, LayoutDashboard, Image as ImageIcon, Star, LogOut, Trash2, Briefcase, UserCircle } from 'lucide-react';
+import { Shield, Loader2, Users, LayoutDashboard, Image as ImageIcon, Star, LogOut, Trash2, Briefcase, UserCircle, Edit2, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -30,6 +30,10 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
   // Add Profile Data
   const [profileUrl, setProfileUrl] = useState('');
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+
+  // Gallery Edit state
+  const [editingCaptionId, setEditingCaptionId] = useState<string | null>(null);
+  const [editingCaptionValue, setEditingCaptionValue] = useState('');
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -141,6 +145,19 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
       toast.success('Deleted successfully');
     } catch(e: any) {
       toast.error('Deletion failed: ' + e.message);
+    }
+  };
+
+  const handleUpdateCaption = async (id: string) => {
+    try {
+      await updateDoc(doc(db, 'gallery', id), {
+        caption: editingCaptionValue,
+        updatedAt: serverTimestamp()
+      });
+      toast.success('Caption updated');
+      setEditingCaptionId(null);
+    } catch (e: any) {
+      toast.error('Failed to update caption: ' + e.message);
     }
   };
 
@@ -262,10 +279,40 @@ export default function AdminPage({ isAdmin }: { isAdmin: boolean }) {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {gallery.map(g => (
-                <div key={g.id} className="relative group bg-slate-900 rounded-xl overflow-hidden border border-white/5">
-                  {g.type === 'video' ? <video src={g.url} className="w-full h-32 object-cover" /> : <img src={g.url} className="w-full h-32 object-cover" />}
-                  <button onClick={() => handleDeleteEntry('gallery', g.id)} className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4"/></button>
-                  <div className="p-3 text-sm truncate">{g.caption || 'No caption'}</div>
+                <div key={g.id} className="relative group bg-slate-900 rounded-xl overflow-hidden border border-white/5 flex flex-col">
+                  <div className="relative">
+                    {g.type === 'video' ? <video src={g.url} controls muted className="w-full h-32 object-cover" /> : <img src={g.url} className="w-full h-32 object-cover" />}
+                    <button onClick={() => handleDeleteEntry('gallery', g.id)} className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"><Trash2 className="w-4 h-4"/></button>
+                  </div>
+                  <div className="p-3 text-sm flex-1">
+                    {editingCaptionId === g.id ? (
+                      <div className="flex items-center gap-2">
+                        <input 
+                          type="text" 
+                          value={editingCaptionValue} 
+                          onChange={e => setEditingCaptionValue(e.target.value)} 
+                          className="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-indigo-500 text-xs" 
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleUpdateCaption(g.id);
+                            if (e.key === 'Escape') setEditingCaptionId(null);
+                          }}
+                        />
+                        <button onClick={() => handleUpdateCaption(g.id)} className="text-emerald-400 hover:text-emerald-300"><Check className="w-4 h-4" /></button>
+                        <button onClick={() => setEditingCaptionId(null)} className="text-slate-400 hover:text-slate-300"><X className="w-4 h-4" /></button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between group/caption">
+                        <span className="truncate pr-2" title={g.caption || 'No caption'}>{g.caption || 'No caption'}</span>
+                        <button 
+                          onClick={() => { setEditingCaptionId(g.id); setEditingCaptionValue(g.caption || ''); }} 
+                          className="opacity-0 group-hover/caption:opacity-100 text-slate-400 hover:text-white transition-opacity shrink-0"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
